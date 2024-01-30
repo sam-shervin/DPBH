@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "My Vite Extension",
+    "name": "The Eye",
     "version": "1.0.0",
     "action": {
         "default_popup": "index.html"
@@ -10,7 +10,7 @@
     "content_scripts": [
         {
             "matches": ["<all_urls>"],
-            "js": ["captureHtml.js"],
+            "js": ["content_scripts.js"],
             "run_at": "document_end"
         }
     ],
