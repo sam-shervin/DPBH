@@ -1,9 +1,10 @@
-// App.tsx
 import { useEffect, useState } from "react";
 import "./App.css";
 
+
 function App() {
     const [capturedClasses, setCapturedClasses] = useState<string[]>([]);
+    const [apiData, setApiData] = useState<string>();
 
     const handleClick = async () => {
         const [tab] = await chrome.tabs.query({
@@ -40,7 +41,21 @@ function App() {
             }
         });
     });
+    const fetchData = async () => {
+        const response = await fetch('https://jsonplaceholder.typicode.com/posts/1');
+        const data = await response.json();
+        setApiData(data);
+    };
 
+    useEffect(() => {
+        fetchData();
+
+        chrome.runtime.onMessage.addListener((message) => {
+            if (message.action === "capturedClasses") {
+                setCapturedClasses(message.classes);
+            }
+        });
+    }, [fetchData]);
     return (
         <>
             <div>
@@ -50,19 +65,12 @@ function App() {
             </div>
             <h1>My Extension</h1>
             <div className="card">
-                <button type="button" onClick={() => handleClick()}>
-                    Capture HTML Classes
-                </button>
-                <p>
-                    Edit <code>src/App.tsx</code> and save to test HMR
-                </p>
-            </div>
-            <p className="read-the-docs">
-                Click on the Vite and React logos to learn more
-            </p>
-            <div>
-                <h2>Captured Classes:</h2>
-                <pre>{JSON.stringify(capturedClasses, null, 2)}</pre>
+                {apiData && (
+                    <div>
+                        <h2>{apiData.title}</h2>
+                        <p>{apiData.body}</p>
+                    </div>
+                )}
             </div>
         </>
     );
